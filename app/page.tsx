@@ -1,69 +1,97 @@
-import Image from "next/image";
+"use client";
+
+import { useEffect, useState } from "react";
+
+// NEXT_PUBLIC_ の値はビルド時にバンドルへ埋め込まれる。
+// Vercel で値を変更したら Redeploy が必要。
+const liffId = process.env.NEXT_PUBLIC_LIFF_ID;
+
+type LiffState =
+  | { status: "loading" }
+  | { status: "error"; message: string }
+  | {
+      status: "ready";
+      displayName: string;
+      isInClient: boolean;
+      os: string | undefined;
+    };
 
 export default function Home() {
+  const [state, setState] = useState<LiffState>(
+    liffId
+      ? { status: "loading" }
+      : {
+          status: "error",
+          message:
+            "NEXT_PUBLIC_LIFF_ID が設定されていません。環境変数を設定してから再ビルド（Redeploy）してください。",
+        },
+  );
+
+  useEffect(() => {
+    if (!liffId) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        // SSR 時には window が無いため、ブラウザ側でのみ読み込む
+        const liff = (await import("@line/liff")).default;
+        await liff.init({ liffId });
+
+        if (!liff.isLoggedIn()) {
+          // ログイン画面へ遷移し、戻ってきたら再度この処理が走る
+          liff.login();
+          return;
+        }
+
+        const profile = await liff.getProfile();
+        if (cancelled) return;
+        setState({
+          status: "ready",
+          displayName: profile.displayName,
+          isInClient: liff.isInClient(),
+          os: liff.getOS(),
+        });
+      } catch (e) {
+        if (cancelled) return;
+        const message =
+          e instanceof Error
+            ? `${e.name}: ${e.message}`
+            : JSON.stringify(e, null, 2);
+        setState({ status: "error", message });
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <main className="mx-auto flex w-full max-w-md flex-1 flex-col gap-4 p-6">
+      <h1 className="text-xl font-bold">流山投票率90%プロジェクト</h1>
+
+      {state.status === "loading" && <p>LIFF を初期化しています…</p>}
+
+      {state.status === "error" && (
+        <div className="rounded border border-red-400 bg-red-50 p-4 text-red-800">
+          <p className="font-bold">エラーが発生しました</p>
+          <pre className="mt-2 whitespace-pre-wrap break-all text-sm">
+            {state.message}
+          </pre>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
-    </div>
+      )}
+
+      {state.status === "ready" && (
+        <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2">
+          <dt className="font-bold">表示名</dt>
+          <dd>{state.displayName}</dd>
+          <dt className="font-bold">isInClient</dt>
+          <dd>{String(state.isInClient)}</dd>
+          <dt className="font-bold">OS</dt>
+          <dd>{state.os ?? "unknown"}</dd>
+        </dl>
+      )}
+    </main>
   );
 }
