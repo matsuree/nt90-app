@@ -1,29 +1,25 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
-
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "流山投票率90%プロジェクト",
   description: "流山市の投票率向上を目指す市民活動のLINEミニアプリ",
 };
 
+export const viewport: Viewport = {
+  themeColor: "#faf6ee",
+};
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="ja"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="ja" className="h-full antialiased">
+      <body className="flex min-h-full flex-col">
+        <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
+          {children}
+        </div>
+        <Toaster />
+      </body>
     </html>
   );
 }

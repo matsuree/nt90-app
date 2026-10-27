@@ -1,26 +1,104 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ダークモードには対応しない（docs/ui.md 3.1）。部品側の dark: 指定は効かないままにしておく */
+@custom-variant dark (&:is(.dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-ja);
+  --font-heading: var(--font-ja);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-celebrate: var(--celebrate);
+  --color-celebrate-foreground: var(--celebrate-foreground);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* 色・角丸・フォントはここでまとめて定義する（docs/ui.md 3章・5章） */
+:root {
+  /* 端末標準の日本語フォント。Webフォントは読み込まない */
+  --font-ja: "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Noto Sans JP",
+    "Noto Sans CJK JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+
+  /* 背景：薄いベージュ／文字：ベージュになじむ茶系のグレー */
+  --background: #faf6ee;
+  --foreground: #2b2a27;
+  --card: #ffffff;
+  --card-foreground: #2b2a27;
+  --popover: #ffffff;
+  --popover-foreground: #2b2a27;
+
+  /* メインカラー：ロゴに合わせた深緑 */
+  --primary: #1f6f4a;
+  --primary-foreground: #ffffff;
+
+  /* サブボタンや区切りに使う、少し濃いベージュ */
+  --secondary: #f1ebdf;
+  --secondary-foreground: #2b2a27;
+  --muted: #f1ebdf;
+  --muted-foreground: #6b675f;
+
+  /* 選択中の項目・バッジに使う薄い緑 */
+  --accent: #e6f2ea;
+  --accent-foreground: #1f6f4a;
+
+  --destructive: #b42318;
+
+  /* 宣言・報告が終わったときのお祝い表示 */
+  --celebrate: #e9a23b;
+  --celebrate-foreground: #2b2a27;
+
+  --border: #e7e0d2;
+  --input: #e7e0d2;
+  --ring: #1f6f4a;
+
+  /* ランキング・マップ用（フェーズ2以降で調整） */
+  --chart-1: #1f6f4a;
+  --chart-2: #3e9468;
+  --chart-3: #74b892;
+  --chart-4: #b5dcc4;
+  --chart-5: #e6f2ea;
+
+  /* 角丸は大きめ（lg = 14px、xl = 約20px） */
+  --radius: 0.875rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  body {
+    @apply bg-background text-base text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
 }
