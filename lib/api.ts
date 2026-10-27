@@ -3,6 +3,7 @@ import type {
   ApiError,
   CurrentElectionResponse,
   ParticipationResponse,
+  RankingResponse,
 } from "@/lib/types";
 
 export class ApiRequestError extends Error {
@@ -54,6 +55,10 @@ async function request<T>(
 
 export function fetchCurrentElection() {
   return request<CurrentElectionResponse>("/api/elections/current");
+}
+
+export function fetchRanking() {
+  return request<RankingResponse>("/api/elections/current/ranking");
 }
 
 export function fetchParticipation(liff: Liff, electionId: string) {

@@ -34,4 +34,18 @@ export type Participation = {
 
 export type ParticipationResponse = { participation: Participation | null };
 
-export type ApiError = { error: { code: string; message: string } };
+export type PrecinctStats = {
+  precinctId: string;
+  number: number;
+  pollingPlaceName: string;
+  eligibleVoters: number | null;
+  officialTurnout: number | null; // %
+  pledged: number;
+  voted: number;
+};
+
+export type RankingResponse =
+  | { election: null }
+  | { election: Election; precincts: PrecinctStats[] };
+
+export type ApiError ={ error: { code: string; message: string } };

@@ -19,15 +19,13 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ApiRequestError, fetchCurrentElection, fetchParticipation, postAction } from "@/lib/api";
 import { daysUntil, formatCount, formatDate, homeView } from "@/lib/election-status";
+import { readLastPrecinctNumber, saveLastPrecinctNumber } from "@/lib/last-precinct";
 import type { CurrentElectionResponse, Participation } from "@/lib/types";
 
 type Loaded = Extract<CurrentElectionResponse, { precincts: unknown }>;
 type Action = Parameters<typeof postAction>[2];
 type PickerPurpose = "pledge" | "report" | "change";
 type ConfirmKind = "cancelPledge" | "cancelReport";
-
-// 前回選んだ投票区の番号（端末内だけに保存。docs/spec.md 6.5）
-const LAST_PRECINCT_KEY = "nt90:lastPrecinctNumber";
 
 // 公開中の選挙回と、自分の参加状況をまとめて取得する
 async function loadHome(liff: Liff) {
@@ -57,9 +55,7 @@ function HomeContent({ liff }: { liff: Liff }) {
   const [picker, setPicker] = useState<PickerPurpose | null>(null);
   const [confirm, setConfirm] = useState<ConfirmKind | null>(null);
   const [done, setDone] = useState<"pledge" | "report" | null>(null);
-  const [lastPrecinctNumber] = useState(
-    () => Number(localStorage.getItem(LAST_PRECINCT_KEY)) || null,
-  );
+  const [lastPrecinctNumber] = useState(readLastPrecinctNumber);
 
   // 読み込みが終わってから state を更新する（読み込み自体は loadHome で行う）
   const load = useCallback(
@@ -100,7 +96,7 @@ function HomeContent({ liff }: { liff: Liff }) {
       const res = await postAction(liff, election.id, action);
       setParticipation(res.participation);
       const p = precincts.find((x) => x.id === res.participation?.precinctId);
-      if (p) localStorage.setItem(LAST_PRECINCT_KEY, String(p.number));
+      if (p) saveLastPrecinctNumber(p.number);
       setPicker(null);
       setConfirm(null);
       onSuccess();
