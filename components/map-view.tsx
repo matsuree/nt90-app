@@ -66,8 +66,9 @@ export function MapView() {
         )}
       </div>
 
-      {/* Leaflet の重なり順が下部メニューやパネルに干渉しないよう、ここで閉じ込める */}
-      <div className="isolate min-h-80 flex-1 overflow-hidden rounded-xl border">
+      {/* Leaflet の重なり順が下部メニューやパネルに干渉しないよう、ここで閉じ込める。
+          Leaflet は入れ物の高さが決まっていないと描画できないため、高さを直接指定する */}
+      <div className="isolate h-[55dvh] min-h-80 overflow-hidden rounded-xl border">
         <PrecinctMap items={items} myNumber={myNumber} pending={!!pending} />
       </div>
 
