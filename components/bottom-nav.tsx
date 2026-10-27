@@ -24,13 +24,18 @@ export function BottomNav() {
               <Link
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={cn(
-                  "flex flex-col items-center gap-0.5 py-2 text-xs font-semibold text-muted-foreground",
-                  active && "text-primary",
-                )}
+                className="flex justify-center py-1.5"
               >
-                <Icon className="size-6" aria-hidden />
-                {label}
+                {/* 選択中は薄い緑の丸い背景で囲み、未選択のグレーと見分けやすくする */}
+                <span
+                  className={cn(
+                    "flex flex-col items-center gap-0.5 rounded-full px-5 py-1 text-xs font-semibold text-muted-foreground",
+                    active && "bg-accent text-accent-foreground",
+                  )}
+                >
+                  <Icon className="size-6" aria-hidden />
+                  {label}
+                </span>
               </Link>
             </li>
           );
