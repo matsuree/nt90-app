@@ -48,6 +48,18 @@ export default function AboutPage() {
               >
                 流山市
               </a>
+              （投票所所在地データ：CC BY 4.0）
+            </li>
+            <li>
+              地図：
+              <a
+                href="https://maps.gsi.go.jp/development/ichiran.html"
+                className="text-primary underline"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                地理院タイル
+              </a>
             </li>
           </ul>
         </CardContent>

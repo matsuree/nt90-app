@@ -40,6 +40,8 @@ export type PrecinctStats = {
   pollingPlaceName: string;
   eligibleVoters: number | null;
   officialTurnout: number | null; // %
+  latitude: number | null; // 投票所の位置
+  longitude: number | null;
   pledged: number;
   voted: number;
 };

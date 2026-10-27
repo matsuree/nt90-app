@@ -1,62 +1,26 @@
 "use client";
 
-import { useEffect, useState, useSyncExternalStore } from "react";
 import { ErrorScreen, LoadingScreen, NoElectionScreen } from "@/components/status-screens";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ApiRequestError, fetchRanking } from "@/lib/api";
-import { formatCount, formatDate } from "@/lib/election-status";
-import { readLastPrecinctNumber } from "@/lib/last-precinct";
-import { formatRate, rankPrecincts, type RankedPrecinct, type RankingKind } from "@/lib/ranking";
+import { formatCount } from "@/lib/election-status";
+import { formatRate, rankPrecincts, type RankedPrecinct } from "@/lib/ranking";
 import type { RankingResponse } from "@/lib/types";
+import { RANKING_TABS as TABS, rankingContext, useRankingData } from "@/lib/use-ranking";
 import { cn } from "@/lib/utils";
 
 type Loaded = Extract<RankingResponse, { precincts: unknown }>;
 
-const TABS: { kind: RankingKind; label: string }[] = [
-  { kind: "pledged", label: "宣言率" },
-  { kind: "voted", label: "投票報告率" },
-  { kind: "official", label: "投票率" },
-];
-
-const noopSubscribe = () => () => {};
-
 // ランキング（docs/ui.md S6、docs/spec.md 8.2・9章）
 export function Ranking() {
-  // 現在時刻は読み込み完了時に一緒に記録する（事前レンダリング中に時刻を読まないため）
-  const [loaded, setLoaded] = useState<{ data: RankingResponse; now: Date } | null>(null);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  // 端末に保存した投票区番号。サーバー側の事前レンダリングでは null
-  const myNumber = useSyncExternalStore(noopSubscribe, readLastPrecinctNumber, () => null);
-
-  useEffect(() => {
-    fetchRanking().then(
-      (data) => setLoaded({ data, now: new Date() }),
-      (e: unknown) => setLoadError(e instanceof ApiRequestError ? e.message : "読み込みに失敗"),
-    );
-  }, []);
+  const { loaded, loadError, myNumber } = useRankingData();
 
   if (loadError) return <ErrorScreen message={loadError} />;
   if (!loaded) return <LoadingScreen />;
   if (!loaded.data.election) return <NoElectionScreen />;
 
-  const { now } = loaded;
   const { election, precincts } = loaded.data as Loaded;
-  const hasOfficial = precincts.some((p) => p.officialTurnout != null);
-  const reportStarted = now >= new Date(election.reportStartAt);
-  const defaultTab: RankingKind = hasOfficial ? "official" : reportStarted ? "voted" : "pledged";
-
-  // 集計前のランキングで出す文言。null なら一覧を出す
-  const pendingNote: Record<RankingKind, string | null> = {
-    pledged: null,
-    voted: reportStarted ? null : `${formatDate(election.reportStartAt)}から集計`,
-    official: hasOfficial ? null : "選挙後に公表",
-  };
-  const periodNote: Record<RankingKind, string> = {
-    pledged: `${formatDate(election.pledgeEndAt)}まで集計`,
-    voted: `${formatDate(election.reportEndAt)}まで集計`,
-    official: "選挙管理委員会の公表値",
-  };
+  const { defaultTab, pendingNote, periodNote } = rankingContext(election, precincts, loaded.now);
 
   return (
     <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-6">

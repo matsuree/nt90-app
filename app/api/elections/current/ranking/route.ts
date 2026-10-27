@@ -9,6 +9,8 @@ type Row = {
   polling_place_name: string;
   eligible_voters: number | null;
   official_turnout: number | string | null;
+  latitude: number | null;
+  longitude: number | null;
   pledged: number | string;
   voted: number | string;
 };
@@ -34,6 +36,8 @@ export async function GET() {
         pollingPlaceName: r.polling_place_name,
         eligibleVoters: r.eligible_voters,
         officialTurnout: r.official_turnout == null ? null : Number(r.official_turnout),
+        latitude: r.latitude,
+        longitude: r.longitude,
         pledged: Number(r.pledged),
         voted: Number(r.voted),
       })),

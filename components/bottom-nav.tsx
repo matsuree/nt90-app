@@ -1,14 +1,15 @@
 "use client";
 
-import { HouseIcon, TrophyIcon } from "lucide-react";
+import { HouseIcon, MapIcon, TrophyIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 
-// 画面下のタブ（docs/ui.md 4.1）。マップはフェーズ3で追加する
+// 画面下のタブ（docs/ui.md 4.1）
 const ITEMS = [
   { href: "/", label: "ホーム", icon: HouseIcon },
   { href: "/ranking", label: "ランキング", icon: TrophyIcon },
+  { href: "/map", label: "マップ", icon: MapIcon },
 ];
 
 export function BottomNav() {
