@@ -2,7 +2,6 @@ import { CircleAlertIcon, Loader2Icon, TicketIcon } from "lucide-react";
 import type { Metadata } from "next";
 import { connection } from "next/server";
 import { Suspense } from "react";
-import { BackLink } from "@/components/back-link";
 import { getCouponShareUrl } from "@/lib/coupon-links";
 import {
   type Coupon,
@@ -14,15 +13,17 @@ import { CouponCard } from "./CouponCard";
 
 export const metadata: Metadata = { title: "クーポン｜流山投票率90%プロジェクト" };
 
+// クーポン（下部タブの1つ。ランキングと同じ見出しの構成にそろえる）
 export default function CouponsPage() {
   return (
-    <main className="flex flex-col gap-4 px-4 py-4">
-      <BackLink href="/" label="ホーム" />
-      <h1 className="text-xl font-bold">クーポン</h1>
+    <div className="flex flex-1 flex-col gap-4 px-4 pt-4 pb-6">
+      <header>
+        <h1 className="text-xl font-bold">クーポン</h1>
+      </header>
       <Suspense fallback={<Message icon="loading">読み込み中</Message>}>
         <CouponList />
       </Suspense>
-    </main>
+    </div>
   );
 }
 
