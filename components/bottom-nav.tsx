@@ -1,6 +1,6 @@
 "use client";
 
-import { HouseIcon, MapIcon, TrophyIcon } from "lucide-react";
+import { HouseIcon, MapIcon, TicketIcon, TrophyIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ const ITEMS = [
   { href: "/", label: "ホーム", icon: HouseIcon },
   { href: "/ranking", label: "ランキング", icon: TrophyIcon },
   { href: "/map", label: "マップ", icon: MapIcon },
+  { href: "/coupons", label: "クーポン", icon: TicketIcon },
 ];
 
 export function BottomNav() {
@@ -30,7 +31,8 @@ export function BottomNav() {
                 {/* 選択中は薄い緑の丸い背景で囲み、未選択のグレーと見分けやすくする */}
                 <span
                   className={cn(
-                    "flex flex-col items-center gap-0.5 rounded-full px-5 py-1 text-xs font-semibold text-muted-foreground",
+                    // 4タブになったので、幅の狭い端末でも「ランキング」が収まるよう左右の余白を px-3 にする
+                    "flex flex-col items-center gap-0.5 rounded-full px-3 py-1 text-xs font-semibold whitespace-nowrap text-muted-foreground",
                     active && "bg-accent text-accent-foreground",
                   )}
                 >
