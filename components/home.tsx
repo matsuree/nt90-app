@@ -1,7 +1,7 @@
 "use client";
 
 import type { Liff } from "@line/liff";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, TicketIcon } from "lucide-react";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -142,15 +142,21 @@ function HomeContent({ liff }: { liff: Liff }) {
     <div className="flex flex-1 flex-col gap-6 px-4 pt-4 pb-8">
       <header className="flex items-center justify-between">
         <p className="font-bold">流山投票率90%プロジェクト</p>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="このアプリについて"
-          nativeButton={false}
-          render={<Link href="/about" />}
-        >
-          <InfoIcon />
-        </Button>
+        <div className="flex items-center">
+          <Button variant="ghost" size="sm" nativeButton={false} render={<Link href="/coupons" />}>
+            <TicketIcon />
+            クーポン
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="このアプリについて"
+            nativeButton={false}
+            render={<Link href="/about" />}
+          >
+            <InfoIcon />
+          </Button>
+        </div>
       </header>
 
       <Card>
